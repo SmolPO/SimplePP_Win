@@ -1,0 +1,4 @@
+﻿  Sim_900.cpp
+b:\project\simpleversion\simplepp\simplepp\sim_900.cpp(149): warning C4018: <: несоответствие типов со знаком и без знака
+b:\project\simpleversion\simplepp\simplepp\sim_900.cpp(173): warning C4018: <: несоответствие типов со знаком и без знака
+  SimplePP.vcxproj -> B:\Project\SimpleVersion\SimplePP\Debug\SimplePP.exe

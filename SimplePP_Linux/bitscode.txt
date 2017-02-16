@@ -1,0 +1,96 @@
+void init_cmds_and_answs_AT()
+{
+    add_cmd(AT);
+    add_cmd(ATE0);
+    add_cmd(ATE1);
+    add_cmd(ATV0);
+    add_cmd(ATV1);
+    add_cmd(CIPMUX);
+    add_cmd(CIPSTATUS);
+    add_cmd(CIPSEND);
+    add_cmd(CIPSTART);
+    add_cmd(CIPSHUT);
+    add_cmd(CIICR);
+    add_cmd(CONNECT_INET);
+    add_cmd(GET_IP);
+    add_cmd(AT_ON_LIGHT);
+    add_cmd(AT_OFF_LIGHT);
+    add_cmd(IS_TRANSP);
+    add_cmd(NOT_TRANSP);
+
+    add_answer(WRITE_MESSAGE);
+    add_answer(OK);
+    add_answer(ECHO_OK);
+    add_answer(CONN_OK);
+    add_answer(ST_INITIAL);
+    add_answer(SEND_OK);
+    add_answer(SHUT_OK);
+
+}
+
+void add_cmd(char* cmd)
+{
+    char* next_command = new char[SIZE_CMD_OR_ANSWER];
+    memset(next_command, 0, sizeof(char)*SIZE_CMD_OR_ANSWER);
+    memcpy(next_command, cmd, sizeof(char)*strlen(cmd));
+    commands_AT[cnt_command] = next_command;
+    cnt_command++;
+}
+
+void add_answer(char* answer)
+{
+    char* next_answer = new char[SIZE_CMD_OR_ANSWER];
+    memset(next_answer, 0, sizeof(char)*SIZE_CMD_OR_ANSWER);
+    memcpy(next_answer, answer, sizeof(char)*strlen(answer));
+    answer_AT[cnt_answer] = next_answer;
+    cnt_answer++;
+}
+
+char* cmd(int cmd)
+{
+    char cmd[SIZE_BUFFER] = { 0 };
+    memcpy(cmd, buffer, STR_LEN(buffer));
+    //Sim900_add_end_symbol(cmd);
+    ////экранирование
+    for (int i = 0; i < strlen(cmd); i++)
+    {
+        if (cmd[i] == '"')
+        {
+            cmd[i] = '\"';
+        }
+    }
+    for (int i = 0; i < cnt_command; i++)
+    {
+        ///в начале команды идет \r\n, поэтому смотрим от второго символа
+        ///сравнивает только по размеру команды!
+        if (strncmp(cmd, commands_AT[i], STR_LEN(cmd)) == 0)
+        {
+            return commands_AT[i];
+        }
+    }
+
+    return AT_cmd[cmd];
+}
+
+char* answer(char* buffer)
+{
+    char answ[SIZE_BUFFER] = { 0 };
+    memcpy(answ, buffer, STR_LEN(buffer));
+    Sim900_add_end_symbol(answ);
+    ////экранирование
+    for (int i = 0; i < strlen(answ); i++)
+    {
+        if (answ[i] == '"')
+        {
+            answ[i] = '\"';
+        }
+    }
+    for (int i = 0; i < cnt_answer; i++)
+    {
+        ///сравнивает только по размеру команды!
+        if (strncmp(answ, answer_AT[i], STR_LEN(answ)) == 0)
+            return answer_AT[i];
+    }
+    cout << "Ответ не найден: " << buffer << endl;
+    return '\0';
+}
